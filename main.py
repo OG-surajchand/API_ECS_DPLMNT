@@ -2,12 +2,17 @@ from typing import List, Optional
 from uuid import uuid4
 from models.models import Item
 from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI(
     title="Sample Items API",
     version="1.0.0",
     description="Example GET endpoints demonstrating query, path params, and response models",
 )
+
+templates = Jinja2Templates(directory="templates")
 
 
 # In-memory sample data store
@@ -58,3 +63,10 @@ def list_items(
             or any(q_lower in t.lower() for t in item.tags)
         ]
     return results[skip : skip + limit]
+
+
+@app.get("/donkey", response_class=HTMLResponse)
+def read_data(request: Request):
+    return templates.TemplateResponse(
+        "donkey.html", {"request": request, "message": "You are a donkey!!!"}
+    )
